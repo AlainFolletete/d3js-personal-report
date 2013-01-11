@@ -1,0 +1,157 @@
+<html>
+	<head>
+	<style type="text/css">
+
+	body {
+	  font: 10px sans-serif;
+	}
+
+	rect {
+	  fill: #eee;
+	}
+	path {
+		display: none;
+	}
+
+	.axis line {
+		stroke: black;
+		shape-rendering: crispEdges;
+	}
+	
+	.grid path,
+	.grid line {
+		stroke: #fff;
+		shape-rendering: crispEdges;
+	}
+
+	.grid text {
+		display: none;
+	}
+
+	
+	</style>
+	</head>
+	<body>
+	<script src="http://d3js.org/d3.v3.min.js"></script>		
+	<script>
+
+		var activity_color = {
+				 Running: '#52D15A',
+				 Swimming: '#525AD1',
+				 Elliptical: '#D15254',
+			};
+	
+		// TODO: read a csv file
+		var dataset = [
+				{ date: '2012-12-20', time: '08:30:00', type: 'Swimming' },
+				{ date: '2012-11-29', time: '08:32:00', type: 'Swimming' },
+				{ date: '2012-11-22', time: '08:30:00', type: 'Swimming' },
+				{ date: '2012-09-16', time: '16:23:39', type: 'Running' },
+				{ date: '2012-09-12', time: '12:10:31', type: 'Running' },
+				{ date: '2012-08-31', time: '12:20:21', type: 'Swimming' },
+				{ date: '2012-08-31', time: '11:52:22', type: 'Running' },
+				{ date: '2012-08-29', time: '17:01:14', type: 'Running' },
+				{ date: '2012-08-26', time: '16:19:31', type: 'Running' },
+				{ date: '2012-08-25', time: '16:30:39', type: 'Swimming' },
+				{ date: '2012-08-17', time: '15:00:44', type: 'Swimming' },
+				{ date: '2012-08-15', time: '17:43:14', type: 'Running' },
+				{ date: '2012-08-13', time: '12:20:46', type: 'Swimming' },
+				{ date: '2012-08-07', time: '12:20:00', type: 'Swimming' },
+				{ date: '2012-08-03', time: '12:23:00', type: 'Swimming' },
+				{ date: '2012-07-31', time: '12:30:00', type: 'Swimming' },
+				{ date: '2012-07-27', time: '12:15:00', type: 'Swimming' },
+				{ date: '2012-07-23', time: '12:20:00', type: 'Swimming' },
+				{ date: '2012-07-20', time: '12:07:48', type: 'Swimming' },
+				{ date: '2012-07-19', time: '18:59:51', type: 'Running' },
+				{ date: '2012-07-17', time: '12:08:38', type: 'Swimming' },
+				{ date: '2012-07-16', time: '18:56:13', type: 'Running' },
+				{ date: '2012-07-13', time: '12:20:07', type: 'Swimming' },
+				{ date: '2012-07-10', time: '12:20:40', type: 'Swimming' },
+				{ date: '2012-07-09', time: '19:21:50', type: 'Running' },
+				{ date: '2012-07-06', time: '12:00:16', type: 'Swimming' },
+				{ date: '2012-07-03', time: '12:28:12', type: 'Swimming' },
+				{ date: '2012-06-27', time: '12:25:55', type: 'Swimming' },
+				{ date: '2012-06-22', time: '18:57:37', type: 'Elliptical' },
+				{ date: '2012-05-31', time: '20:13:33', type: 'Elliptical' },
+				{ date: '2012-04-08', time: '20:26:25', type: 'Elliptical' },
+				{ date: '2012-03-29', time: '18:46:43', type: 'Running' },
+				{ date: '2012-03-23', time: '16:49:34', type: 'Running' }
+					];
+
+		var w = 800,
+			h = 110,
+			padding = 100;
+
+		var parse = d3.time.format.utc("%Y-%m-%d").parse;
+
+		var scale_x = d3.time.scale()
+							.range([0,w])
+							.domain([parse('2012-1-1'), parse('2012-12-31')]);
+
+		// TODO: use time parser
+		start_y = new Date(0,0,0,6,0,0);
+		stop_y = new Date(0,0,0,23,59,59);
+
+		var scale_y = d3.time.scale()
+							.range([0, h])
+							.domain([start_y, stop_y]);
+
+		var xAxis = d3.svg.axis()
+						.scale(scale_x)						
+						.orient('bottom')
+						.tickFormat(d3.time.format.utc("%b"));
+
+		var yAxis = d3.svg.axis()
+						.scale(scale_y)
+						.orient('left')
+						.ticks(d3.time.hours, 6)
+						.tickSize(-w);
+
+		var svg = d3.select('body')
+					.append('svg')
+					.attr('transform', "translate("+padding+", "+(h + padding)+")")
+					.attr('width', w + padding * 2)
+					.attr('height', h + padding * 2);
+
+		// background
+		svg.append('rect')
+			.attr('transform', "translate("+padding+","+padding+")")
+			.attr('width', w)
+			.attr('height', h);
+
+		// x grid
+		svg.append('g')
+				.attr('class', 'grid')
+				.attr('transform', "translate("+padding+", "+(h + padding)+")")
+				.call(xAxis.tickSize(-h));
+
+		svg.append('g')
+				.attr('class', 'x axis')
+				.attr('transform', "translate("+padding+", "+(h + padding)+")")
+				.call(xAxis.tickSize(-10));
+
+		svg.append('g')
+				.attr('class', 'y axis')
+				.attr('transform', "translate("+padding+", "+padding+")")
+				.call(yAxis);
+
+		// center months labels
+		svg.selectAll('.x.axis text')
+			.style('text-anchor', 'middle')
+			.attr('x', -w / 12 / 2);
+		
+
+		svg.selectAll('circle')
+			.data(dataset)	
+			.enter()
+			.append('circle')
+			.attr('cx', function(d) { return scale_x(parse(d.date)) + padding })
+			.attr('cy', function(d) { 
+				time = d.time.split(':');
+				return scale_y(new Date(0, 0, 0, time[0], time[1], time[2]).getTime()) + padding;
+			})
+			.attr('r', 3)
+			.attr('fill', function(d) { return activity_color[d.type] });
+	</script>
+	</body>
+</html>
