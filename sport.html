@@ -26,6 +26,16 @@
 	.x.grid text {
 		display: none;
 	}	
+
+	circle {
+		stroke: #000;
+	}
+
+	.hover {
+		fill: #F5DA42;
+	}
+	
+	
 	</style>
 	</head>
 	<body>
@@ -125,7 +135,7 @@
 		svg.append('g')
 				.attr('class', 'x axis')
 				.attr('transform', "translate("+padding+", "+(h + padding)+")")
-				.call(xAxis.tickSize(-10));
+				.call(xAxis.tickSize(-5));
 
 		svg.append('g')
 				.attr('class', 'y grid')
@@ -148,7 +158,13 @@
 				return scale_y(new Date(0, 0, 0, time[0], time[1], time[2]).getTime()) + padding;
 			})
 			.attr('r', 3)
-			.attr('fill', function(d) { return activity_color[d.type] });
+			.attr('fill', function(d) { return activity_color[d.type] })
+			.on("mouseover", function(d) {
+				svg.selectAll('circle').classed('hover', function(dd) { return dd.type == d.type });
+			})	
+			.on("mouseout", function(d) {
+		        svg.selectAll("circle").classed("hover", false);
+			});
 	</script>
 	</body>
 </html>
