@@ -40,16 +40,9 @@
 	</head>
 	<body>
 	<script src="http://d3js.org/d3.v3.min.js"></script>		
-	<script>
-
-		var activity_color = {
-				 Running: '#52D15A',
-				 Swimming: '#525AD1',
-				 Elliptical: '#D15254',
-			};
-	
+	<script>	
 		// TODO: read a csv file
-		var dataset = [
+		/*var dataset = [
 				{ date: '2012-12-20', time: '08:30:00', type: 'Swimming' },
 				{ date: '2012-11-29', time: '08:32:00', type: 'Swimming' },
 				{ date: '2012-11-22', time: '08:30:00', type: 'Swimming' },
@@ -83,88 +76,98 @@
 				{ date: '2012-04-08', time: '20:26:25', type: 'Elliptical' },
 				{ date: '2012-03-29', time: '18:46:43', type: 'Running' },
 				{ date: '2012-03-23', time: '16:49:34', type: 'Running' }
-					];
+					];*/
 
-		var w = 800,
-			h = 110,
-			padding = 100;
+		d3.csv('data/cardioActivities.csv', function(dataset) {
+			var activity_color = {
+					 Running: '#52D15A',
+					 Swimming: '#525AD1',
+					 Elliptical: '#D15254',
+				};
 
-		var parse = d3.time.format.utc("%Y-%m-%d").parse;
+			var w = 800,
+				h = 110,
+				padding = 100;
 
-		var scale_x = d3.time.scale()
-							.range([0,w])
-							.domain([parse('2012-1-1'), parse('2012-12-31')]);
+			var parse = d3.time.format.utc("%Y-%m-%d").parse;
+			var parse_time = d3.time.format.utc("%H:%M:%S").parse;
 
-		// TODO: use time parser
-		start_y = new Date(0,0,0,6,0,0);
-		stop_y = new Date(0,0,0,23,59,59);
+			// clean data 
+			dataset.forEach(function (d, i) {
+				date_infos = d.Date.split(' ');
+				d.date = parse(date_infos[0]);
+				d.time = parse_time(date_infos[1]);
+			});
 
-		var scale_y = d3.time.scale()
-							.range([0, h])
-							.domain([start_y, stop_y]);
+			var scale_x = d3.time.scale()
+								.range([0,w])
+								.domain([parse('2012-1-1'), parse('2012-12-31')]);
 
-		var xAxis = d3.svg.axis()
-						.scale(scale_x)						
-						.orient('bottom')
-						.tickFormat(d3.time.format.utc("%b"));
+			var scale_y = d3.time.scale()
+								.range([0, h])
+								.domain([parse_time('06:00:00'), parse_time('23:00:00')]);
 
-		var yAxis = d3.svg.axis()
-						.scale(scale_y)
-						.orient('left')
-						.ticks(d3.time.hours, 6)
-						.tickSize(-w);
+			var xAxis = d3.svg.axis()
+							.scale(scale_x)						
+							.orient('bottom')
+							.tickFormat(d3.time.format.utc("%b"));
 
-		var svg = d3.select('body')
-					.append('svg')
+			var yAxis = d3.svg.axis()
+							.scale(scale_y)
+							.orient('left')
+							.ticks(d3.time.hours, 6)
+							.tickSize(-w);
+
+			var svg = d3.select('body')
+						.append('svg')
+						.attr('transform', "translate("+padding+", "+(h + padding)+")")
+						.attr('width', w + padding * 2)
+						.attr('height', h + padding * 2);
+
+			// background
+			svg.append('rect')
+				.attr('transform', "translate("+padding+","+padding+")")
+				.attr('width', w)
+				.attr('height', h);
+
+			// x grid
+			svg.append('g')
+					.attr('class', 'x grid')
 					.attr('transform', "translate("+padding+", "+(h + padding)+")")
-					.attr('width', w + padding * 2)
-					.attr('height', h + padding * 2);
+					.call(xAxis.tickSize(-h));
 
-		// background
-		svg.append('rect')
-			.attr('transform', "translate("+padding+","+padding+")")
-			.attr('width', w)
-			.attr('height', h);
+			svg.append('g')
+					.attr('class', 'x axis')
+					.attr('transform', "translate("+padding+", "+(h + padding)+")")
+					.call(xAxis.tickSize(-5));
 
-		// x grid
-		svg.append('g')
-				.attr('class', 'x grid')
-				.attr('transform', "translate("+padding+", "+(h + padding)+")")
-				.call(xAxis.tickSize(-h));
+			svg.append('g')
+					.attr('class', 'y grid')
+					.attr('transform', "translate("+padding+", "+padding+")")
+					.call(yAxis);
 
-		svg.append('g')
-				.attr('class', 'x axis')
-				.attr('transform', "translate("+padding+", "+(h + padding)+")")
-				.call(xAxis.tickSize(-5));
-
-		svg.append('g')
-				.attr('class', 'y grid')
-				.attr('transform', "translate("+padding+", "+padding+")")
-				.call(yAxis);
-
-		// center months labels
-		svg.selectAll('.x.axis text')
-			.style('text-anchor', 'middle')
-			.attr('x', -w / 12 / 2);
+			// center months labels
+			svg.selectAll('.x.axis text')
+				.style('text-anchor', 'middle')
+				.attr('x', -w / 12 / 2);
 		
 
-		svg.selectAll('circle')
-			.data(dataset)	
-			.enter()
-			.append('circle')
-			.attr('cx', function(d) { return scale_x(parse(d.date)) + padding })
-			.attr('cy', function(d) { 
-				time = d.time.split(':');
-				return scale_y(new Date(0, 0, 0, time[0], time[1], time[2]).getTime()) + padding;
-			})
-			.attr('r', 3)
-			.attr('fill', function(d) { return activity_color[d.type] })
-			.on("mouseover", function(d) {
-				svg.selectAll('circle').classed('hover', function(dd) { return dd.type == d.type });
-			})	
-			.on("mouseout", function(d) {
-		        svg.selectAll("circle").classed("hover", false);
-			});
+			svg.selectAll('circle')
+				.data(dataset)	
+				.enter()
+				.append('circle')
+				.attr('cx', function(d) { return scale_x(d.date) + padding })
+				.attr('cy', function(d) { return scale_y(d.time) + padding })
+				.attr('r', 3)
+				.attr('fill', function(d) { return activity_color[d.Type] })
+				.on("mouseover", function(d) {
+					svg.selectAll('circle').classed('hover', function(dd) { return dd.Type == d.Type });
+				})	
+				.on("mouseout", function(d) {
+				    svg.selectAll("circle").classed("hover", false);
+				});
+		});
+		
 	</script>
 	</body>
 </html>
