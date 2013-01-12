@@ -1,7 +1,6 @@
 <html>
 	<head>
 	<style type="text/css">
-
 	body {
 	  font: 10px sans-serif;
 	}
@@ -24,11 +23,9 @@
 		shape-rendering: crispEdges;
 	}
 
-	.grid text {
+	.x.grid text {
 		display: none;
-	}
-
-	
+	}	
 	</style>
 	</head>
 	<body>
@@ -121,7 +118,7 @@
 
 		// x grid
 		svg.append('g')
-				.attr('class', 'grid')
+				.attr('class', 'x grid')
 				.attr('transform', "translate("+padding+", "+(h + padding)+")")
 				.call(xAxis.tickSize(-h));
 
@@ -131,7 +128,7 @@
 				.call(xAxis.tickSize(-10));
 
 		svg.append('g')
-				.attr('class', 'y axis')
+				.attr('class', 'y grid')
 				.attr('transform', "translate("+padding+", "+padding+")")
 				.call(yAxis);
 
