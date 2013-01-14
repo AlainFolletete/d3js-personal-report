@@ -1,0 +1,61 @@
+<html>
+	<head>
+		<script src="http://d3js.org/d3.v3.min.js"></script>
+		<style type="text/css">
+		body {
+		  font: 10px sans-serif;
+		}
+
+		.bg {
+			fill: #E4E9EB;
+		}
+
+		.grid rect {
+		  fill: #eee;
+		}
+		path {
+			display: none;
+		}
+
+		.axis line {
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+	
+		.grid path,
+		.grid line {
+			stroke: #fff;
+			shape-rendering: crispEdges;
+		}
+
+		.x.grid text {
+			display: none;
+		}	
+
+		circle {
+			stroke: #000;
+			stroke-width: 0.5px;
+		}
+
+		.hover {
+			fill: #F5DA42;
+		}	
+	
+		.book {
+			stroke: #555;
+			stroke-width: 0.5px;
+		}
+	</style>
+	</head>
+	<body>
+		<h1>Personal Report</h1>
+		<h2>Sport</h2>
+		<div id="sport">
+		</div>
+		<h2>Books read</h2>
+		<div id="books">
+		</div>
+		<script type="text/javascript" src="js/sport.js"></script>
+		<script type="text/javascript" src="js/books.js"></script>
+	</body>
+</html>
