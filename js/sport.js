@@ -103,16 +103,15 @@ d3.csv('data/cardioActivities.csv', function(dataset) {
 					.attr('class', 'legend')
 					.attr('transform', function (d, i) { return "translate(0, "+(i * (20 + 3) + padding)+")"; });
 
-  legend.append('rect')
-		.attr('x', extra_w - 90)
-		.attr('y', function (d, i) { console.log(i); return })
-		.attr('width', 15)
-		.attr('height', 15)
-		.attr('fill', function(d) { return activity_color[d] })
+    legend.append('rect')
+        .attr('x', extra_w - 90)
+        .attr('width', 15)
+        .attr('height', 15)
+        .attr('fill', function(d) { return activity_color[d] })
 
-  legend.append("text")
-	  .attr("x", extra_w - 90 + 15 + 5)
-	  .attr("y", 7)
-	  .attr("dy", ".35em")
-	  .text(function(d) { return d; });
+    legend.append("text")
+      .attr("x", extra_w - 90 + 15 + 5)
+      .attr("y", 7)
+      .attr("dy", ".35em")
+      .text(function(d) { return d; });
 });
