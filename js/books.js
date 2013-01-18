@@ -49,7 +49,7 @@ d3.csv('data/goodreads.csv', function(dataset) {
                 .attr('height', h + padding * 2)
                 .attr('transform', 'translate('+padding+','+ padding +')');
 
-    svg.selectAll('rect .bingo')
+    svg.selectAll('rect')
         .data(dataset)
         .enter()
         .append('rect')
@@ -68,7 +68,20 @@ d3.csv('data/goodreads.csv', function(dataset) {
         .attr('y', function(d, i) { return (i * rect_h) + 0.5})
         .attr('width', function(d) { return x(getDateEnd(parse(d.date_end))) - x(getDateStart(parse(d.date_start))) })
         .attr('height', rect_h - 2) // padding + stroke
-        .attr('fill', function(d) { return color(d.rating) });
+        .attr('fill', function(d) { return color(d.rating) })
+		.on('mouseover', function(d) {
+			svg.append('image')
+					.attr('id', 'book_cover')
+					.attr('x', extra_w - 150)
+					.attr('y', 0)
+					.attr('width', 120)
+					.attr('height', 150)
+					.attr('xlink:href', d.image_url );		
+		})
+		.on('mouseout', function(d) {
+			svg.select('image#book_cover')
+				.remove();
+		});
 
     svg.append('g')
         .attr('class', 'x axis')
