@@ -5,13 +5,16 @@ from dateutil import tz
 from datetime import datetime
 import csv
 
+user_id = '13805829'
 
+url = 'http://www.goodreads.com/review/list/'+user_id+'.xml'
+timezone = 'Europe/Paris'
 parameters = {
     'key' : 'RijHdX5x5GA4FSzktfbjdQ',
     'v' : '2',
     'sort' : 'date_started'
 }
-url = 'http://www.goodreads.com/review/list/13805829.xml'
+
 header = ['title', 'date_start', 'date_end', 'rating', 'image_url']
 r = requests.get(url, params=parameters)
 
@@ -27,10 +30,10 @@ with open('../data/goodreads.csv', 'w') as csvfile:
         started_at = review.find('started_at').text
 
         if read_at:
-            dt_read_at = parse(read_at).astimezone(tz.gettz('Europe/Paris'))
+            dt_read_at = parse(read_at).astimezone(tz.gettz(timezone))
 
         if started_at:
-            dt_started_at = parse(started_at).astimezone(tz.gettz('Europe/Paris'))
+            dt_started_at = parse(started_at).astimezone(tz.gettz(timezone))
 
         title = review.find('book/title').text.replace(',', '')
         image_url = review.find('book/image_url').text
