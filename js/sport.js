@@ -1,16 +1,12 @@
 d3.csv('data/cardioActivities.csv', function(dataset) {
+	var activity_color = d3.scale.category10();
 	var year = 2012;
 
-	var activity_color = {
-			 Running: '#52D15A',
-			 Swimming: '#525AD1',
-			 Elliptical: '#D15254',
-		};
+	var margin = {top: 40, right: 100, bottom: 40, left: 40}
 
-	var w = 800,				
-		extra_w = 800 + 150, 
-		h = 110,
-		padding = 40;
+	var w = 960 - margin.right - margin.left,				
+		h = 300,
+		radius = 6;
 
 	var parse = d3.time.format.utc("%Y-%m-%d").parse;
 	var parse_time = d3.time.format.utc("%H:%M:%S").parse;
@@ -47,31 +43,29 @@ d3.csv('data/cardioActivities.csv', function(dataset) {
 
 	var svg = d3.select('#sport')
 				.append('svg')
-				.attr('transform', "translate("+padding+", "+padding+")")
-				.attr('width', extra_w + padding * 2)
-				.attr('height', h + padding * 2);
+				.attr('width', w + margin.right + margin.left)
+				.attr('height', h + margin.top + margin.bottom)
+				.append('g')
+				.attr('transform', "translate("+margin.left+", "+margin.top+")");
 
 	// background
 	svg.append('rect')
 		.attr('class', 'bg')
-		.attr('transform', "translate("+padding+","+padding+")")
 		.attr('width', w)
 		.attr('height', h);
 
 	// x grid
 	svg.append('g')
 			.attr('class', 'x grid')
-			.attr('transform', "translate("+padding+", "+(h + padding)+")")
 			.call(xAxis.tickSize(-h));
 
 	svg.append('g')
 			.attr('class', 'x axis')
-			.attr('transform', "translate("+padding+", "+(h + padding)+")")
+			.attr('transform', 'translate(0, '+h+')')
 			.call(xAxis.tickSize(-5));
 
 	svg.append('g')
 			.attr('class', 'y grid')
-			.attr('transform', "translate("+padding+", "+padding+")")
 			.call(yAxis);
 
 	// center months labels
@@ -79,15 +73,14 @@ d3.csv('data/cardioActivities.csv', function(dataset) {
 		.style('text-anchor', 'middle')
 		.attr('x', -w / 12 / 2);
 
-
 	svg.selectAll('circle')
 		.data(dataset)	
 		.enter()
 		.append('circle')
-		.attr('cx', function(d) { return scale_x(d.date) + padding })
-		.attr('cy', function(d) { return scale_y(d.time) + padding })
-		.attr('r', 3)
-		.attr('fill', function(d) { return activity_color[d.Type] })
+		.attr('cx', function(d) { return scale_x(d.date) })
+		.attr('cy', function(d) { return scale_y(d.time) })
+		.attr('r', radius)
+		.attr('fill', function(d) { return activity_color(d.Type) })
 		.on("mouseover", function(d) {
 			svg.selectAll('circle').classed('hover', function(dd) { return dd.Type == d.Type });
 		})	
@@ -101,16 +94,16 @@ d3.csv('data/cardioActivities.csv', function(dataset) {
 					.enter()
 					.append('g')
 					.attr('class', 'legend')
-					.attr('transform', function (d, i) { return "translate(0, "+(i * (20 + 3) + padding)+")"; });
+					.attr('transform', function (d, i) { return "translate(0, "+(i * 20)+")"; });
 
     legend.append('rect')
-        .attr('x', extra_w - 90)
+        .attr('x', w + 20)
         .attr('width', 15)
         .attr('height', 15)
-        .attr('fill', function(d) { return activity_color[d] })
+        .attr('fill', function(d) { return activity_color(d) })
 
     legend.append("text")
-      .attr("x", extra_w - 90 + 15 + 5)
+      .attr("x", w + 40)
       .attr("y", 7)
       .attr("dy", ".35em")
       .text(function(d) { return d; });
