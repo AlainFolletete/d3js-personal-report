@@ -3,6 +3,11 @@ body {
 	width: 960px;
 }
 
+.title {
+	border-bottom: 1px solid #aaa;
+	padding-bottom: 10px;
+}
+
 .bg {
 	fill: #E4E9EB;
 }
