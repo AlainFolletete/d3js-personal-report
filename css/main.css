@@ -1,0 +1,44 @@
+body {
+	margin: auto;
+	width: 960px;
+}
+
+.bg {
+	fill: #E4E9EB;
+}
+
+.grid rect {
+	fill: #eee;
+}
+path {
+	display: none;
+}
+
+.axis line {
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+
+.grid path,
+.grid line {
+	stroke: #fff;
+	shape-rendering: crispEdges;
+}
+
+.x.grid text {
+	display: none;
+}
+
+circle {
+	stroke: #000;
+	stroke-width: 0.5px;
+}
+
+.hover {
+	fill: #F5DA42;
+}
+
+.book {
+	stroke: #555;
+	stroke-width: 0.5px;
+}
